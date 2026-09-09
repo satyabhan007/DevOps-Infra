@@ -1,0 +1,73 @@
+name: Deploy DevOps-Infra to GitHub Pages
+
+# Deploys the static site plus the raw lab sources so in-page links to
+# `<topic>/examples/**` and `<topic>/*.md` resolve (GitHub Pages serves
+# them as plain text). Package: index.html, 404.html, top-level *.md,
+# assets/, learn/, lab/, and every topic dir (iac, terraform, docker,
+# kubernetes, sre) — their .html/.css/.js/.svg AND .md/.tf/.hcl/.yaml/
+# .yml/.sh/.py/Dockerfile. Excludes: *.ps1, __pycache__, .terraform, .git.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages (source: "GitHub Actions") so the first deploy
+          # works without manually flipping Settings -> Pages.
+          enablement: true
+
+      - name: Build site package (static site + raw lab sources)
+        run: |
+          rm -rf _site_pkg && mkdir -p _site_pkg
+          cp index.html _site_pkg/ 2>/dev/null || true
+          cp 404.html   _site_pkg/ 2>/dev/null || true
+          cp ./*.md     _site_pkg/ 2>/dev/null || true
+          cp LICENSE    _site_pkg/ 2>/dev/null || true
+          for d in assets learn lab iac terraform docker kubernetes sre; do
+            [ -d "$d" ] && mkdir -p "_site_pkg/$d" && \
+              find "$d" \
+                \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.svg' \
+                   -o -name '*.png' -o -name '*.json' -o -name '*.md' -o -name '*.py' \
+                   -o -name '*.tf' -o -name '*.hcl' -o -name '*.yaml' -o -name '*.yml' \
+                   -o -name '*.sh' -o -name 'Dockerfile' -o -name '*.Dockerfile' \
+                   -o -name '.dockerignore' -o -name '*.env.example' \) \
+                -not -path '*/.terraform/*' -not -path '*/__pycache__/*' \
+                -not -path '*/node_modules/*' \
+                -exec cp --parents {} _site_pkg/ \;
+          done
+          # Serve extensionless Dockerfiles as text too (Pages needs an ext).
+          find _site_pkg -name 'Dockerfile' -exec sh -c 'cp "$1" "$1.txt"' _ {} \;
+          find _site_pkg \( -name '*.ps1' -o -name 'auto_sync.log' -o -name '__pycache__' \) \
+            -exec rm -rf {} + 2>/dev/null || true
+          du -sh _site_pkg && find _site_pkg -type f | sort | head -80
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site_pkg
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

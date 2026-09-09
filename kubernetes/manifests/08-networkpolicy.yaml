@@ -1,0 +1,58 @@
+# 08 — NetworkPolicy. By default every Pod can talk to every other Pod
+# in the cluster. That is a lateral-movement highway for anything that
+# gets a foothold. Fix: default-deny, then allow only what is needed.
+#
+# Needs a CNI that enforces policy (Calico, Cilium, Antrea). On a CNI
+# that ignores policy, these apply cleanly and do nothing — verify!
+#
+#   kubectl apply -f 08-networkpolicy.yaml
+#   kubectl exec deploy/checkout -- wget -qO- http://api        # allowed
+#   kubectl exec deploy/checkout -- wget -qO- http://postgres:5432  # blocked
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  # Empty podSelector = every Pod in the namespace.
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-allow
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Only checkout Pods may reach the api, only on 8080.
+    - from:
+        - podSelector:
+            matchLabels:
+              app: checkout
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # api may reach postgres, and DNS (or every lookup fails).
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

@@ -1,0 +1,4 @@
+# Pin exact versions — "flask" alone means a different app on every build.
+# Renovate/Dependabot bumps these in reviewed PRs.
+flask==3.0.3
+gunicorn==22.0.0

@@ -1,0 +1,41 @@
+# 07 — RBAC, least privilege. A workload's ServiceAccount should be able
+# to do exactly what the app needs and nothing else. The default SA in
+# most clusters can do more than you think — always set one explicitly.
+#
+#   kubectl apply -f 07-rbac.yaml
+#   kubectl auth can-i list pods --as=system:serviceaccount:default:checkout
+#   # -> yes
+#   kubectl auth can-i delete pods --as=system:serviceaccount:default:checkout
+#   # -> no
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: checkout
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: checkout-read
+rules:
+  # This app does leader election via a Lease and reads sibling Pods.
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "list", "watch", "create", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: checkout-read
+subjects:
+  - kind: ServiceAccount
+    name: checkout
+    namespace: default
+roleRef:
+  kind: Role
+  name: checkout-read
+  apiGroup: rbac.authorization.k8s.io

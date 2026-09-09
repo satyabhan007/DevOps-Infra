@@ -1,0 +1,42 @@
+# 04 — Ingress: HTTP(S) routing from the internet to Services. An
+# Ingress object is inert without an Ingress controller (ingress-nginx,
+# Traefik, or a cloud LB controller) running in the cluster to implement
+# it.
+#
+#   kubectl apply -f 04-ingress.yaml
+#   kubectl get ingress shop -o wide      # ADDRESS = the external IP/host
+#   curl -H 'Host: shop.example.com' http://<address>/api/health
+#
+# Path routing below: /api/* -> api Service, everything else -> checkout.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - shop.example.com
+      secretName: shop-tls
+  rules:
+    - host: shop.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: checkout
+                port:
+                  number: 80

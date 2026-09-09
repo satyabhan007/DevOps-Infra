@@ -1,0 +1,75 @@
+# A realistic local stack: app + Postgres + Redis. `docker compose up`
+# and you have the whole dependency graph, wired and health-gated.
+#
+#   docker compose up -d
+#   docker compose ps          # health column, not just "up"
+#   docker compose logs -f app
+#   docker compose down -v     # -v also drops the named volumes
+#
+# The lessons here:
+#   - depends_on: condition: service_healthy  -> app starts AFTER db is
+#     actually accepting connections, not just after the process forks
+#   - healthcheck on every service -> orchestrators and `compose ps`
+#     report real readiness
+#   - named volumes -> data survives `down` (but not `down -v`)
+#   - no secrets inline -> env_file, and .env is gitignored
+
+name: checkout-local
+
+services:
+  app:
+    build:
+      context: ../hardened
+    image: devops-infra/checkout:local
+    env_file:
+      - .env.example
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/app
+      REDIS_URL: redis://cache:6379/0
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:5000/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 256M
+    restart: unless-stopped
+
+  db:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  cache:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

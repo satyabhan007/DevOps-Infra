@@ -1,0 +1,107 @@
+# 02 — the workhorse. A Deployment manages a ReplicaSet, which manages
+# Pods. You get: declarative scaling, rolling updates, instant rollback
+# (`kubectl rollout undo`), and self-healing.
+#
+#   kubectl apply -f 02-deployment-service.yaml
+#   kubectl rollout status deploy/checkout
+#   kubectl set image deploy/checkout app=ghcr.io/acme/checkout:v2
+#   kubectl rollout undo deploy/checkout          # back to v1, seconds
+#   kubectl get endpoints checkout                # which Pods get traffic
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  labels:
+    app: checkout
+spec:
+  replicas: 4
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: checkout
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # Never drop below full capacity during a deploy; add one at a time.
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      # Spread Pods across nodes/zones so one failure ≠ full outage.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: checkout
+      containers:
+        - name: app
+          image: ghcr.io/acme/checkout:v1.4.2
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                # Give the load balancer time to stop sending new requests
+                # before the process exits — kills 502s during rollout.
+                command: ["sh", "-c", "sleep 10"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+      terminationGracePeriodSeconds: 40
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout
+  labels:
+    app: checkout
+spec:
+  type: ClusterIP
+  selector:
+    app: checkout
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

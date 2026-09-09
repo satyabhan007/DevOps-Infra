@@ -1,0 +1,6 @@
+# Everything the build does NOT need. A fat context = slow `docker build`
+# and secrets leaking into layers. Start by ignoring all, then allow back.
+*
+!go.mod
+!go.sum
+!*.go

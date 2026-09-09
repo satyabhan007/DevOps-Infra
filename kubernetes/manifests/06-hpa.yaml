@@ -1,0 +1,53 @@
+# 06 — HorizontalPodAutoscaler: add/remove Pods based on load. Needs
+# metrics-server (CPU/memory) or an adapter (custom/external metrics like
+# queue depth or RPS).
+#
+#   kubectl apply -f 06-hpa.yaml
+#   kubectl get hpa checkout --watch
+#   # generate load, watch REPLICAS climb, then settle after cooldown
+#
+# HPA only works if the Deployment sets resource *requests* — the target
+# utilisation is a percentage OF the request. No request => no scaling.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: checkout
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: checkout
+  minReplicas: 4
+  maxReplicas: 40
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      # React fast to traffic spikes: allow doubling every 30s.
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 30
+        - type: Pods
+          value: 4
+          periodSeconds: 30
+      selectPolicy: Max
+    scaleDown:
+      # Scale in slowly so a brief dip doesn't thrash capacity.
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps-Infra — IaC, Terraform, Docker & Kubernetes From Scratch</title>
+    <meta name="description" content="A hands-on infrastructure curriculum: Infrastructure as Code, Terraform, Docker, and Kubernetes explained in depth — with runnable labs, production scenarios, SRE incident playbooks, and interview prep.">
+    <meta name="color-scheme" content="dark">
+    <link rel="canonical" href="https://satyabhan007.github.io/DevOps-Infra/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DevOps-Infra — From-Scratch Infrastructure">
+    <meta property="og:title" content="DevOps-Infra — IaC, Terraform, Docker & Kubernetes From Scratch">
+    <meta property="og:description" content="Infrastructure as Code, Terraform, Docker and Kubernetes explained in depth — runnable labs, production scenarios, SRE playbooks, interview prep.">
+    <meta property="og:url" content="https://satyabhan007.github.io/DevOps-Infra/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DevOps-Infra — IaC, Terraform, Docker & Kubernetes From Scratch">
+    <meta name="twitter:description" content="A hands-on infrastructure curriculum with runnable labs, production scenarios and SRE playbooks.">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9741;</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400&display=swap"></noscript>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Progressive enhancement: only hide-for-reveal once we know JS runs. -->
+    <script>if('IntersectionObserver' in window){document.documentElement.className='js';}</script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-container">
+            <div class="brand">
+                <div class="brand-logo">&#9741;</div>
+                <div>
+                    <div class="brand-text">DevOps-Infra</div>
+                    <div class="brand-sub">From-Scratch Infrastructure</div>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#curriculum">Curriculum</a>
+                <a href="learn/">Course</a>
+                <a href="#labs">Labs</a>
+                <a href="#scenarios">Prod &amp; SRE</a>
+                <a href="#docs">Docs</a>
+            </nav>
+            <div class="nav-actions">
+                <a href="learn/" class="btn btn-primary btn-sm">Take the Course</a>
+                <a href="https://github.com/satyabhan007/DevOps-Infra" class="btn btn-outline btn-sm" target="_blank" rel="noopener">GitHub</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero reveal">
+        <div class="container">
+            <h1>Run Infrastructure <span style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Like Production</span></h1>
+            <p class="subtitle">
+                Infrastructure as Code, Terraform, Docker and Kubernetes — explained
+                in depth, built from first principles. Runnable labs, 3&nbsp;a.m.
+                production scenarios, SRE incident playbooks, and a full interview
+                question bank.
+            </p>
+            <div class="hero-actions">
+                <a href="learn/" class="btn btn-primary">Start the 8-Chapter Course</a>
+                <a href="#labs" class="btn btn-outline">Browse the Runnable Labs</a>
+            </div>
+            <div class="badge-row">
+                <span class="badge badge-green">&#9989; CI-validated labs</span>
+                <span class="badge badge-primary">&#128295; terraform &middot; docker &middot; kubectl</span>
+                <span class="badge badge-purple">&#128293; SRE prod playbooks</span>
+            </div>
+            <div class="scroll-indicator">
+                <span>Scroll to explore</span>
+                <span class="scroll-dot"></span><span class="scroll-dot"></span><span class="scroll-dot"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section-sm reveal">
+        <div class="container">
+            <div class="stats-bar">
+                <div class="stat-item"><div class="stat-value">8</div><div class="stat-label">Course Chapters</div></div>
+                <div class="stat-item"><div class="stat-value">5</div><div class="stat-label">Levels Each</div></div>
+                <div class="stat-item"><div class="stat-value">14</div><div class="stat-label">Deep-Dive Guides</div></div>
+                <div class="stat-item"><div class="stat-value">20+</div><div class="stat-label">Runnable Lab Files</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Curriculum -->
+    <section class="section reveal" id="curriculum">
+        <div class="container">
+            <h2 class="section-title">Eight Chapters, One Platform Stack</h2>
+            <p class="section-subtitle">
+                From "what is declarative infrastructure?" to draining a node during an
+                incident without dropping a request. Every chapter has an analogy, the
+                tools you already use, runnable code, and a checkpoint quiz.
+            </p>
+            <div class="card" style="margin-bottom:32px;border-left:3px solid #3b82f6;">
+                <div class="card-title">&#128218; Prefer a guided path?</div>
+                <p style="margin:12px 0;color:var(--text-muted);font-size:0.92rem;">
+                    The same topics as a structured course — <strong>8 chapters &times;
+                    5 levels</strong>, from plain-English analogy to expert view, with
+                    lab links and checkpoint quizzes.
+                </p>
+                <a href="learn/" class="btn btn-sm btn-primary">Open the Infrastructure Course &rarr;</a>
+            </div>
+            <div class="grid-3">
+                <div class="card phase-card" data-phase="Ch 1">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">1</div>
+                        <div>
+                            <div class="card-title">IaC Fundamentals</div>
+                            <div class="card-meta">Declarative &bull; State &bull; Drift &bull; Idempotency</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        Why we stopped SSH-ing into servers. Desired state vs imperative
+                        steps, what a state file is and why it is dangerous, drift, plan
+                        &amp; apply, and the push/pull models.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="iac/BEGINNER_GUIDE.md" class="btn btn-sm btn-outline">Guide</a>
+                        <a href="iac/DEEP_DIVE.md" class="btn btn-sm btn-ghost">Deep Dive</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 2">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">2</div>
+                        <div>
+                            <div class="card-title">Terraform</div>
+                            <div class="card-meta">Providers &bull; State &bull; Modules &bull; Workspaces</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        The plan/apply lifecycle, the state file up close, remote
+                        backends with locking, modules as functions, <code class="inline">for_each</code>,
+                        and the migrations that keep teams up at night.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="terraform/BEGINNER_GUIDE.md" class="btn btn-sm btn-outline">Guide</a>
+                        <a href="terraform/SCENARIOS.md" class="btn btn-sm btn-ghost">Scenarios</a>
+                        <a href="terraform/examples/" class="btn btn-sm btn-ghost">Labs</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 3">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">3</div>
+                        <div>
+                            <div class="card-title">Docker &amp; Containers</div>
+                            <div class="card-meta">Namespaces &bull; cgroups &bull; Layers &bull; Multi-stage</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        What a container actually is (it is a process), image layers and
+                        the build cache, multi-stage builds, distroless, networking,
+                        volumes, and Compose for the whole dependency graph.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="docker/BEGINNER_GUIDE.md" class="btn btn-sm btn-outline">Guide</a>
+                        <a href="docker/SCENARIOS.md" class="btn btn-sm btn-ghost">Scenarios</a>
+                        <a href="docker/examples/" class="btn btn-sm btn-ghost">Labs</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 4">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">4</div>
+                        <div>
+                            <div class="card-title">Kubernetes Architecture</div>
+                            <div class="card-meta">API server &bull; etcd &bull; Scheduler &bull; kubelet</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        The control loop that runs the internet. Control plane vs nodes,
+                        the reconciliation pattern, how a <code class="inline">kubectl apply</code>
+                        becomes a running Pod, and where it breaks.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="kubernetes/BEGINNER_GUIDE.md" class="btn btn-sm btn-outline">Guide</a>
+                        <a href="kubernetes/DEEP_DIVE.md" class="btn btn-sm btn-ghost">Deep Dive</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 5">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">5</div>
+                        <div>
+                            <div class="card-title">K8s Workloads</div>
+                            <div class="card-meta">Deployment &bull; StatefulSet &bull; Service &bull; Ingress</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        Pods, ReplicaSets, Deployments and rollouts; StatefulSets and
+                        stable storage; Jobs and CronJobs; Services, endpoints, and
+                        Ingress routing. Nine runnable manifests.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="kubernetes/APPLICATIONS.md" class="btn btn-sm btn-outline">Applications</a>
+                        <a href="kubernetes/manifests/" class="btn btn-sm btn-ghost">Manifests</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 6">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">6</div>
+                        <div>
+                            <div class="card-title">Config, Storage &amp; Security</div>
+                            <div class="card-meta">ConfigMap &bull; Secret &bull; RBAC &bull; NetworkPolicy</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        Config outside the image, why a Secret is not encryption,
+                        PV/PVC/CSI and the storage lifecycle, least-privilege RBAC,
+                        default-deny networking, and Pod security.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="kubernetes/DEEP_DIVE.md" class="btn btn-sm btn-outline">Deep Dive</a>
+                        <a href="kubernetes/manifests/07-rbac.yaml" class="btn btn-sm btn-ghost">RBAC lab</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 7">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">7</div>
+                        <div>
+                            <div class="card-title">Scaling &amp; Self-Healing</div>
+                            <div class="card-meta">HPA &bull; Requests/Limits &bull; Probes &bull; PDB</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        Requests vs limits and the OOMKill, QoS classes, the three
+                        probes and how they cause outages, HPA/VPA/KEDA, affinity and
+                        spread, PodDisruptionBudgets, and graceful shutdown.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="kubernetes/PROD_SCENARIOS.md" class="btn btn-sm btn-outline">Prod Scenarios</a>
+                        <a href="kubernetes/manifests/06-hpa.yaml" class="btn btn-sm btn-ghost">HPA lab</a>
+                    </div>
+                </div>
+
+                <div class="card phase-card" data-phase="Ch 8">
+                    <div style="display:flex;gap:16px;align-items:flex-start;">
+                        <div class="phase-number">8</div>
+                        <div>
+                            <div class="card-title">SRE &amp; Production Ops</div>
+                            <div class="card-meta">SLO &bull; Error budget &bull; Incident response</div>
+                        </div>
+                    </div>
+                    <p style="margin:20px 0;color:var(--text-muted);font-size:0.9rem;">
+                        SLI/SLO/error budgets, the four golden signals, how an SRE runs
+                        an incident, rollout strategies, capacity and toil, and blameless
+                        postmortems — with worked examples.
+                    </p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="sre/BEGINNER_GUIDE.md" class="btn btn-sm btn-outline">Guide</a>
+                        <a href="sre/PROD_CHALLENGES.md" class="btn btn-sm btn-ghost">Challenges</a>
+                        <a href="sre/INTERVIEW_QA.md" class="btn btn-sm btn-ghost">Interview Q&amp;A</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Labs -->
+    <section class="section section-alt reveal" id="labs">
+        <div class="container">
+            <h2 class="section-title">Runnable <span class="highlight">Labs</span></h2>
+            <p class="section-subtitle">
+                Every example is checked in CI: <code class="inline">terraform validate</code>,
+                <code class="inline">hadolint</code>, a real <code class="inline">docker build</code>,
+                and <code class="inline">kubeconform</code> — plus a zero-dependency
+                Python structural check that is the source of the green badge.
+            </p>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#127959;&#65039;</div>
+                        <div>
+                            <div class="card-title">Terraform stacks</div>
+                            <div class="card-meta">01-hello &rarr; 04-remote-state</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        Hello-state, variables + validation + locals, a local module
+                        called with <code class="inline">for_each</code>, and a remote
+                        backend with locking. Provider-light — no cloud account needed.
+                    </p>
+                    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="terraform/examples/01-hello/main.tf" class="btn btn-sm btn-outline">01</a>
+                        <a href="terraform/examples/02-variables-outputs/main.tf" class="btn btn-sm btn-outline">02</a>
+                        <a href="terraform/examples/03-module/main.tf" class="btn btn-sm btn-outline">03</a>
+                        <a href="terraform/examples/04-remote-state/backend.tf" class="btn btn-sm btn-outline">04</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#128051;</div>
+                        <div>
+                            <div class="card-title">Docker builds</div>
+                            <div class="card-meta">multi-stage &bull; hardened &bull; compose</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        A Go app compiled in a fat image and shipped on distroless; a
+                        hardened single-stage Python image with the full checklist; a
+                        Compose stack with health-gated dependencies.
+                    </p>
+                    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="https://github.com/satyabhan007/DevOps-Infra/blob/main/docker/examples/multistage/Dockerfile" class="btn btn-sm btn-outline" target="_blank" rel="noopener">multi-stage</a>
+                        <a href="https://github.com/satyabhan007/DevOps-Infra/blob/main/docker/examples/hardened/Dockerfile" class="btn btn-sm btn-outline" target="_blank" rel="noopener">hardened</a>
+                        <a href="docker/examples/compose/docker-compose.yml" class="btn btn-sm btn-outline">compose</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#9741;</div>
+                        <div>
+                            <div class="card-title">Kubernetes manifests</div>
+                            <div class="card-meta">10 files, kubeconform-clean</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        Pod, Deployment + Service, ConfigMap/Secret, Ingress,
+                        StatefulSet, HPA, RBAC, NetworkPolicy, PodDisruptionBudget +
+                        the full probe set, and a blue/green cutover.
+                    </p>
+                    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+                        <a href="kubernetes/manifests/02-deployment-service.yaml" class="btn btn-sm btn-outline">Deployment</a>
+                        <a href="kubernetes/manifests/05-statefulset.yaml" class="btn btn-sm btn-outline">StatefulSet</a>
+                        <a href="kubernetes/manifests/10-blue-green.yaml" class="btn btn-sm btn-outline">Blue/Green</a>
+                    </div>
+                </div>
+            </div>
+            <div class="playground-cta">
+                <a href="https://github.com/satyabhan007/DevOps-Infra" class="btn btn-primary" target="_blank" rel="noopener">Clone &amp; run the labs</a>
+                <a href="lab/validate.py" class="btn btn-outline">Read the validator</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prod & SRE scenarios -->
+    <section class="section reveal" id="scenarios">
+        <div class="container">
+            <h2 class="section-title">Production &amp; <span class="highlight">SRE</span></h2>
+            <p class="section-subtitle">
+                The part interviews and on-call actually test: what you do when it is
+                broken. Symptom &rarr; diagnosis &rarr; fix &rarr; prevention, written
+                the way a runbook should be.
+            </p>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">&#128293; K8s prod scenarios</div>
+                    <p style="margin:12px 0;color:var(--text-muted);font-size:0.9rem;">
+                        CrashLoopBackOff, ImagePullBackOff, OOMKilled, Pending forever,
+                        DNS flakiness, a rollout that 502s, node NotReady, PVC stuck
+                        Terminating, throttling that looks like a slow app.
+                    </p>
+                    <a href="kubernetes/PROD_SCENARIOS.md" class="btn btn-sm btn-primary">Open scenarios</a>
+                </div>
+                <div class="card">
+                    <div class="card-title">&#128737;&#65039; SRE challenge playbooks</div>
+                    <p style="margin:12px 0;color:var(--text-muted);font-size:0.9rem;">
+                        How an SRE tackles a live incident: triage, comms, mitigation
+                        before root cause, error-budget decisions, and the blameless
+                        postmortem that follows.
+                    </p>
+                    <a href="sre/PROD_CHALLENGES.md" class="btn btn-sm btn-primary">Open playbooks</a>
+                </div>
+                <div class="card">
+                    <div class="card-title">&#127891; K8s interview modules</div>
+                    <p style="margin:12px 0;color:var(--text-muted);font-size:0.9rem;">
+                        Grouped Q&amp;A: architecture, scheduling, networking, storage,
+                        security, autoscaling, and troubleshooting — with the follow-up
+                        the interviewer will ask next.
+                    </p>
+                    <a href="kubernetes/INTERVIEW.md" class="btn btn-sm btn-primary">Open Q&amp;A</a>
+                </div>
+                <div class="card">
+                    <div class="card-title">&#128188; SRE interview Q&amp;A</div>
+                    <p style="margin:12px 0;color:var(--text-muted);font-size:0.9rem;">
+                        SLIs/SLOs, error budgets, the golden signals, capacity planning,
+                        incident command, and the classic "design me a paging strategy"
+                        question.
+                    </p>
+                    <a href="sre/INTERVIEW_QA.md" class="btn btn-sm btn-primary">Open Q&amp;A</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting started -->
+    <section class="section section-alt reveal" id="getting-started">
+        <div class="container">
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">Clone, run the validator, then pick a lab. Real tools optional.</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot">1</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Clone the repository</div>
+                        <div class="timeline-desc">
+                            <div class="cmd-row">
+                                <pre id="cmd-clone"><code>git clone https://github.com/satyabhan007/DevOps-Infra.git
+cd DevOps-Infra</code></pre>
+                                <button class="copy-btn" data-target="#cmd-clone" type="button">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">2</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Run the structural validator</div>
+                        <div class="timeline-desc">
+                            Zero dependencies — checks every lab file offline.
+                            <div class="cmd-row">
+                                <pre id="cmd-test"><code>python lab/validate.py</code></pre>
+                                <button class="copy-btn" data-target="#cmd-test" type="button">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">3</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Try a real lab</div>
+                        <div class="timeline-desc">
+                            <div class="cmd-row">
+                                <pre id="cmd-lab"><code>cd terraform/examples/01-hello &amp;&amp; terraform init &amp;&amp; terraform plan
+# or
+docker build -t demo docker/examples/multistage
+# or
+kubectl apply --dry-run=client -f kubernetes/manifests/</code></pre>
+                                <button class="copy-btn" data-target="#cmd-lab" type="button">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Docs -->
+    <section class="section reveal" id="docs">
+        <div class="container">
+            <h2 class="section-title">Documentation Index</h2>
+            <p class="section-subtitle">
+                Every topic gets a beginner guide (analogy + daily-life), a deep dive or
+                scenario file (production war stories + examples), and runnable code.
+            </p>
+            <div class="card">
+                <table class="doc-table">
+                    <thead>
+                        <tr><th>Guide</th><th>Topic</th><th>What you get</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><a href="iac/BEGINNER_GUIDE.md">iac/BEGINNER_GUIDE.md</a></td><td>IaC 101</td><td>Cattle-not-pets analogy, declarative vs imperative, drift, the state-file danger</td></tr>
+                        <tr><td><a href="iac/DEEP_DIVE.md">iac/DEEP_DIVE.md</a></td><td>IaC internals</td><td>Reconciliation, plan/apply, push vs pull, immutable infra, policy-as-code</td></tr>
+                        <tr><td><a href="terraform/BEGINNER_GUIDE.md">terraform/BEGINNER_GUIDE.md</a></td><td>Terraform</td><td>Providers, the state file up close, modules, workspaces, the core loop</td></tr>
+                        <tr><td><a href="terraform/SCENARIOS.md">terraform/SCENARIOS.md</a></td><td>Terraform in prod</td><td>State lock stuck, drift, <code class="inline">import</code>, <code class="inline">moved</code>, secret leaks, blast radius</td></tr>
+                        <tr><td><a href="docker/BEGINNER_GUIDE.md">docker/BEGINNER_GUIDE.md</a></td><td>Containers</td><td>A container is a process; layers, cache, multi-stage, volumes, networking</td></tr>
+                        <tr><td><a href="docker/SCENARIOS.md">docker/SCENARIOS.md</a></td><td>Docker in prod</td><td>Huge images, cache misses, zombie PID 1, prod-parity, the OOMKill</td></tr>
+                        <tr><td><a href="kubernetes/BEGINNER_GUIDE.md">kubernetes/BEGINNER_GUIDE.md</a></td><td>Kubernetes 101</td><td>The control loop, objects, <code class="inline">kubectl apply</code> end to end</td></tr>
+                        <tr><td><a href="kubernetes/DEEP_DIVE.md">kubernetes/DEEP_DIVE.md</a></td><td>K8s internals</td><td>Scheduler, kubelet, CNI/CSI, RBAC, admission, the networking model</td></tr>
+                        <tr><td><a href="kubernetes/INTERVIEW.md">kubernetes/INTERVIEW.md</a></td><td>K8s interview</td><td>Grouped Q&amp;A with the follow-up questions, by topic area</td></tr>
+                        <tr><td><a href="kubernetes/PROD_SCENARIOS.md">kubernetes/PROD_SCENARIOS.md</a></td><td>K8s on-call</td><td>12 symptom&rarr;fix&rarr;prevention runbooks for the common failures</td></tr>
+                        <tr><td><a href="kubernetes/APPLICATIONS.md">kubernetes/APPLICATIONS.md</a></td><td>K8s applications</td><td>Deploying stateless, stateful, autoscaled, and blue/green workloads</td></tr>
+                        <tr><td><a href="sre/BEGINNER_GUIDE.md">sre/BEGINNER_GUIDE.md</a></td><td>SRE 101</td><td>SLI/SLO/error budget, golden signals, toil, on-call from scratch</td></tr>
+                        <tr><td><a href="sre/PROD_CHALLENGES.md">sre/PROD_CHALLENGES.md</a></td><td>SRE incidents</td><td>How an SRE tackles &amp; resolves prod challenges — worked incidents</td></tr>
+                        <tr><td><a href="sre/INTERVIEW_QA.md">sre/INTERVIEW_QA.md</a></td><td>SRE interview</td><td>Q&amp;A + system-design prompts with model answers</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer reveal">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="brand-logo">&#9741;</div>
+                    <div class="brand-text">DevOps-Infra</div>
+                </div>
+                <p class="footer-text">
+                    A self-contained infrastructure curriculum — Infrastructure as Code,
+                    Terraform, Docker and Kubernetes from first principles, with runnable
+                    labs, production scenarios and SRE playbooks. Sibling project to
+                    <a href="https://satyabhan007.github.io/AI-ML/" style="color:var(--primary)">AI-ML</a>.
+                </p>
+                <div class="social-links">
+                    <a href="https://satyabhan007.github.io" class="social-link" target="_blank" rel="noopener" title="Portfolio"><span>&#127760;</span></a>
+                    <a href="https://github.com/satyabhan007/DevOps-Infra" class="social-link" target="_blank" rel="noopener" title="GitHub"><span>&#128187;</span></a>
+                    <a href="https://www.linkedin.com/in/satyabhan-bhadoriya-777b28239" class="social-link" target="_blank" rel="noopener" title="LinkedIn"><span>&#128188;</span></a>
+                </div>
+            </div>
+            <div class="copyright">
+                <span>&copy; <span id="current-year">2026</span> DevOps-Infra. MIT License.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

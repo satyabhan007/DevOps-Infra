@@ -1,0 +1,130 @@
+# 10 — blue/green cutover with plain Kubernetes primitives (no Argo
+# Rollouts, no service mesh). Two full Deployments; the Service selector
+# is the switch.
+#
+#   kubectl apply -f 10-blue-green.yaml          # blue live, green idle
+#   kubectl -n default get pods -l app=frontend --show-labels
+#   # test green internally:
+#   kubectl port-forward deploy/frontend-green 8081:8080
+#   # cut over (atomic, instant):
+#   kubectl patch service frontend -p '{"spec":{"selector":{"app":"frontend","slot":"green"}}}'
+#   # rollback is the same patch back to slot: blue
+#
+# Trade-off: 2x the Pods during a release. Canary (shift 5% -> 50% ->
+# 100% by replica count or mesh weights) trades that cost for slower,
+# safer rollout.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-blue
+  labels:
+    app: frontend
+    slot: blue
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: frontend
+      slot: blue
+  template:
+    metadata:
+      labels:
+        app: frontend
+        slot: blue
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: frontend
+          image: ghcr.io/acme/frontend:v5.2.0
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-green
+  labels:
+    app: frontend
+    slot: green
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: frontend
+      slot: green
+  template:
+    metadata:
+      labels:
+        app: frontend
+        slot: green
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: frontend
+          image: ghcr.io/acme/frontend:v5.3.0
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  type: ClusterIP
+  # Flip slot: blue <-> green to cut traffic over atomically.
+  selector:
+    app: frontend
+    slot: blue
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

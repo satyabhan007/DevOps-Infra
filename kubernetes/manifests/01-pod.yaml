@@ -1,0 +1,70 @@
+# 01 — a bare Pod. You almost never apply this directly (no self-healing,
+# no rollout, no scaling) — but every higher object (Deployment,
+# StatefulSet, Job) ultimately stamps out Pods that look like this.
+#
+#   kubectl apply -f 01-pod.yaml
+#   kubectl get pod web --watch
+#   kubectl describe pod web        # events explain Pending / CrashLoop
+#   kubectl delete pod web          # ...and it is gone forever. No controller.
+#
+# Note every block below: it is the minimum a reviewer should demand.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+  labels:
+    app: web
+    tier: frontend
+spec:
+  # Pod-level security posture: no root, no privilege escalation.
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: web
+      image: nginxinc/nginx-unprivileged:1.27-alpine
+      ports:
+        - containerPort: 8080
+          name: http
+      # Requests = what the scheduler reserves. Limits = the hard ceiling.
+      # No requests => scheduler guesses => noisy-neighbour outages.
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 250m
+          memory: 128Mi
+      # Liveness: "is it wedged? restart it." Readiness: "can it take
+      # traffic right now?" — different questions, different endpoints.
+      livenessProbe:
+        httpGet:
+          path: /
+          port: http
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
+      readinessProbe:
+        httpGet:
+          path: /
+          port: http
+        initialDelaySeconds: 2
+        periodSeconds: 5
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: ["ALL"]
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /var/cache/nginx
+  volumes:
+    - name: tmp
+      emptyDir: {}
+    - name: cache
+      emptyDir: {}

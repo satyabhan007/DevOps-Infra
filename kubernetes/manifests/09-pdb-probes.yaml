@@ -1,0 +1,87 @@
+# 09 — PodDisruptionBudget + the full probe set. A PDB protects
+# availability during *voluntary* disruptions (node drain, cluster
+# upgrade, `kubectl drain`). It does NOT help with node crashes — that
+# is what replicas + spread are for.
+#
+#   kubectl apply -f 09-pdb-probes.yaml
+#   kubectl drain <node> --ignore-daemonsets   # respects the PDB, evicts slowly
+#   kubectl get pdb payments
+#
+# minAvailable: 80%  ->  the drain blocks rather than take you below 4/5.
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: payments
+spec:
+  minAvailable: 80%
+  selector:
+    matchLabels:
+      app: payments
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments
+  labels:
+    app: payments
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: payments
+          image: ghcr.io/acme/payments:v2.7.1
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          # startup: slow boot (JVM warmup, cache load) without a long
+          # liveness initialDelay that would hide real hangs later.
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            failureThreshold: 40
+            periodSeconds: 3
+          # liveness: only "restart me if wedged" — keep it cheap and
+          # dependency-free (no DB check here, or a slow DB restarts Pods).
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          # readiness: "should I be in the load-balancer right now" — this
+          # one CAN check dependencies; failing it just removes traffic.
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            periodSeconds: 5
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 15"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+      terminationGracePeriodSeconds: 45
