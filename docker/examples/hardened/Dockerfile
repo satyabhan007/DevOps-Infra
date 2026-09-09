@@ -35,10 +35,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py ./
 
-USER appuser
+# Numeric UID (matches the useradd above) so it resolves on any host.
+USER 10001
 EXPOSE 5000
 
+# JSON/exec form; the shell is explicit so `|| exit 1` still works.
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
-    CMD curl -fsS http://localhost:5000/healthz || exit 1
+    CMD ["sh", "-c", "curl -fsS http://localhost:5000/healthz || exit 1"]
 
 ENTRYPOINT ["python", "app.py"]
