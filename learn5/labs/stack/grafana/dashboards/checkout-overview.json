@@ -1,0 +1,118 @@
+{
+  "uid": "part5-checkout-overview",
+  "title": "checkout — Service Overview (Part 5)",
+  "description": "Golden signals + SLO error-budget burn for the sample 'checkout' service used across Part 5's chapters.",
+  "tags": ["devops-infra", "part5", "golden-signals"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(http_requests_total, service)",
+        "includeAll": true,
+        "multi": true
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "deploys",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "expr": "changes(build_info{service=~\"$service\"}[5m]) > 0",
+        "titleFormat": "deploy {{version}}"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Traffic — requests/sec",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum by (service) (rate(http_requests_total{service=~\"$service\"}[5m]))",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Errors — 5xx ratio",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 0.01 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (service) (rate(http_requests_total{service=~\"$service\",code=~\"5..\"}[5m])) / sum by (service) (rate(http_requests_total{service=~\"$service\"}[5m]))",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Latency — success-only p50/p95/p99 (exemplars -> trace)",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{service=~\"$service\",code!~\"5..\"}[5m])))", "legendFormat": "p50", "exemplar": true },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{service=~\"$service\",code!~\"5..\"}[5m])))", "legendFormat": "p95", "exemplar": true },
+        { "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{service=~\"$service\",code!~\"5..\"}[5m])))", "legendFormat": "p99", "exemplar": true }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "SLO error-budget burn rate (1h / 6h windows)",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "See ../../alerting/slo-burn-rate-rules.yml — a value above 1 means the budget is burning faster than the SLO window allows.",
+      "targets": [
+        { "expr": "slo:checkout_availability:burn_rate1h", "legendFormat": "burn rate (1h)" },
+        { "expr": "slo:checkout_availability:burn_rate6h", "legendFormat": "burn rate (6h)" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Saturation — CPU + memory (host)",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 7 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percentunit" } },
+      "targets": [
+        { "expr": "avg by (service) (rate(process_cpu_seconds_total{service=~\"$service\"}[5m]))", "legendFormat": "{{service}} cpu" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Recent traces (via Tempo)",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 14 },
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "targets": [
+        { "queryType": "traceql", "limit": 20, "query": "{ resource.service.name =~ \"$service\" }" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+# Part 5 lab — multi-window multi-burn-rate SLO alerts (Ch 6 SLIs/SLOs/error
+# budgets, Ch 7 burn-rate alerting), for a sample "checkout" service.
+#
+# SLO: 99.9% of requests succeed (non-5xx) over a rolling 30-day window.
+#   error budget = 1 - 0.999 = 0.001 (0.1% of requests may fail)
+#
+# Validate:  promtool check rules slo-burn-rate-rules.yml
+#
+# ---------------------------------------------------------------------------
+# The burn-rate math (Google SRE Workbook, ch. "Alerting on SLOs")
+# ---------------------------------------------------------------------------
+# A "burn rate" of 1 means you are consuming the error budget at exactly the
+# rate that would exhaust it in precisely the SLO window (30d here) — i.e.
+# you are on track to land exactly on 99.9%. A burn rate of N means you are
+# burning the budget N times faster than that: at burn rate N you exhaust
+# the whole 30-day budget in (30d / N).
+#
+# burn_rate(window) = error_ratio(window) / (1 - SLO)
+#                    = error_ratio(window) / error_budget
+#
+# Two numbers matter for picking a threshold:
+#   1. how much of the budget a page is allowed to cost you before you
+#      notice ("budget consumption" for the alert's own window), and
+#   2. how fast that happens (the burn rate threshold).
+#
+# The standard workbook recipe uses two severities, each checked over a
+# SHORT window (to fire fast) AND a LONG window (to avoid paging on a blip
+# that self-corrects in minutes) — both windows must agree before it pages:
+#
+#   severity | long window | burn rate | short window | budget burned by long window
+#   ---------|-------------|-----------|--------------|------------------------------
+#   page     | 1h          | 14.4x     | 5m           | 1h * 14.4 / (30*24h) ≈ 2%
+#   page     | 6h          | 6x        | 30m          | 6h * 6   / (30*24h) ≈ 5%
+#   ticket   | 1d          | 3x        | 2h           | 1d * 3   / (30*24h) ≈ 10%
+#   ticket   | 3d          | 1x        | 6h           | 3d * 1   / (30*24h) ≈ 10%
+#
+# i.e. the fast/page pair catches a hard outage within minutes while only
+# risking ~2-5% of the monthly budget on a false page; the slow/ticket pair
+# catches a slow, steady leak that would otherwise fly under the radar until
+# the budget is nearly gone.
+groups:
+  # ---------------------------------------------------------------------
+  # 1. Recording rules — the SLI (bad-event ratio) pre-computed at each
+  #    window so the alert expressions below stay cheap and readable.
+  # ---------------------------------------------------------------------
+  - name: checkout.slo.recording-rules
+    interval: 30s
+    rules:
+      - record: slo:checkout_availability:errors_ratio_rate5m
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[5m])), 0.001)
+
+      - record: slo:checkout_availability:errors_ratio_rate30m
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[30m]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[30m])), 0.001)
+
+      - record: slo:checkout_availability:errors_ratio_rate1h
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[1h]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[1h])), 0.001)
+
+      - record: slo:checkout_availability:errors_ratio_rate2h
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[2h]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[2h])), 0.001)
+
+      - record: slo:checkout_availability:errors_ratio_rate6h
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[6h]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[6h])), 0.001)
+
+      - record: slo:checkout_availability:errors_ratio_rate1d
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[1d]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[1d])), 0.001)
+
+      - record: slo:checkout_availability:errors_ratio_rate3d
+        expr: |
+          sum(rate(http_requests_total{service="checkout",code=~"5.."}[3d]))
+          /
+          clamp_min(sum(rate(http_requests_total{service="checkout"}[3d])), 0.001)
+
+      # burn rate = error ratio / error budget (0.001 for a 99.9% SLO).
+      # Surfaced directly on the dashboard (../stack/grafana/dashboards).
+      - record: slo:checkout_availability:burn_rate1h
+        expr: slo:checkout_availability:errors_ratio_rate1h / 0.001
+
+      - record: slo:checkout_availability:burn_rate6h
+        expr: slo:checkout_availability:errors_ratio_rate6h / 0.001
+
+  # ---------------------------------------------------------------------
+  # 2. Multi-window multi-burn-rate alerts — both windows of a pair must
+  #    breach their threshold before the alert fires, which is what makes
+  #    this resistant to single-window noise.
+  # ---------------------------------------------------------------------
+  - name: checkout.slo.burn-rate-alerts
+    rules:
+      # --- fast burn: ~2% of the 30d budget consumed in 1h -> page now ---
+      - alert: CheckoutSLOErrorBudgetFastBurn1h
+        expr: |
+          (
+            slo:checkout_availability:errors_ratio_rate1h / 0.001 > 14.4
+            and
+            slo:checkout_availability:errors_ratio_rate5m / 0.001 > 14.4
+          )
+        for: 2m
+        labels:
+          severity: page
+          slo: checkout-availability
+          window: 1h_5m
+        annotations:
+          summary: "checkout: fast error-budget burn (14.4x, ~2% of 30d budget in 1h)"
+          description: >-
+            The checkout SLO (99.9% availability) is burning its 30-day error
+            budget more than 14x the sustainable rate, confirmed over both a
+            1h and a 5m window. At this rate the entire monthly budget is
+            exhausted in about 2 hours. Page immediately.
+          runbook: "https://runbooks.example.com/checkout#slo-fast-burn"
+
+      # --- fast-ish burn: ~5% of the 30d budget in 6h -> page now ---
+      - alert: CheckoutSLOErrorBudgetFastBurn6h
+        expr: |
+          (
+            slo:checkout_availability:errors_ratio_rate6h / 0.001 > 6
+            and
+            slo:checkout_availability:errors_ratio_rate30m / 0.001 > 6
+          )
+        for: 15m
+        labels:
+          severity: page
+          slo: checkout-availability
+          window: 6h_30m
+        annotations:
+          summary: "checkout: sustained error-budget burn (6x, ~5% of 30d budget in 6h)"
+          description: >-
+            Confirmed over both a 6h and a 30m window — this is not a blip.
+            At this rate the monthly budget is exhausted in about 5 days.
+            Page immediately.
+          runbook: "https://runbooks.example.com/checkout#slo-fast-burn"
+
+      # --- slow burn: ~10% of the 30d budget in 1d -> ticket, not a page ---
+      - alert: CheckoutSLOErrorBudgetSlowBurn1d
+        expr: |
+          (
+            slo:checkout_availability:errors_ratio_rate1d / 0.001 > 3
+            and
+            slo:checkout_availability:errors_ratio_rate2h / 0.001 > 3
+          )
+        for: 1h
+        labels:
+          severity: ticket
+          slo: checkout-availability
+          window: 1d_2h
+        annotations:
+          summary: "checkout: slow error-budget burn (3x, ~10% of 30d budget in 1d)"
+          description: >-
+            A steady, lower-grade leak — file a ticket for the next business
+            day rather than paging on-call overnight.
+          runbook: "https://runbooks.example.com/checkout#slo-slow-burn"
+
+      # --- slowest burn: ~10% of the 30d budget in 3d -> ticket ---
+      - alert: CheckoutSLOErrorBudgetSlowBurn3d
+        expr: |
+          (
+            slo:checkout_availability:errors_ratio_rate3d / 0.001 > 1
+            and
+            slo:checkout_availability:errors_ratio_rate6h / 0.001 > 1
+          )
+        for: 3h
+        labels:
+          severity: ticket
+          slo: checkout-availability
+          window: 3d_6h
+        annotations:
+          summary: "checkout: slow error-budget burn (1x, ~10% of 30d budget in 3d)"
+          description: >-
+            Budget consumption tracking right at the sustainable ceiling over
+            a 3-day window — worth a look before it becomes a page.
+          runbook: "https://runbooks.example.com/checkout#slo-slow-burn"

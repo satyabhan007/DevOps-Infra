@@ -1,0 +1,13 @@
+# Part 5 lab — tells Grafana to auto-load every dashboard JSON mounted at
+# /var/lib/grafana/dashboards (see ../../dashboards in docker-compose.yml).
+apiVersion: 1
+
+providers:
+  - name: part5-labs
+    orgId: 1
+    folder: "Part 5 — Observability"
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards

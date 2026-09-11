@@ -1,0 +1,92 @@
+# Part 5 lab — OpenTelemetry Collector: a traces + metrics pipeline for the
+# sample "checkout" service (Ch 4 Distributed Tracing, Ch 2 Prometheus).
+#
+# Shape: OTLP in (gRPC + HTTP) -> batch/resource processing -> fan out to
+# Tempo (traces) and a Prometheus-scrapeable endpoint (metrics). This same
+# file is mounted straight into ../stack/docker-compose.yml, so it is both
+# a standalone teaching example and the shipper the local stack actually runs.
+#
+# Validate:
+#   otelcol validate --config=collector.yaml
+#   docker run --rm -v "$PWD":/w otel/opentelemetry-collector-contrib:0.109.0 \
+#       validate --config=/w/learn5/labs/otel-collector/collector.yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+
+  # attach service.name/namespace, host and env metadata so every span and
+  # metric can be sliced the same way in Grafana without app-side plumbing.
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: lab
+        action: upsert
+
+  resourcedetection:
+    detectors: [env, system]
+    timeout: 2s
+
+  # scrub anything sensitive before it leaves the collector (Ch 5 log
+  # aggregation cost/safety note applies to spans and logs alike).
+  attributes/redact:
+    actions:
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.cookie
+        action: delete
+
+  # keep every error and every slow request, thin out the boring successes —
+  # this is the sampling policy referenced in Ch 4's "debugging a broken
+  # trace" walkthrough.
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    policies:
+      - name: errors
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+      - name: slow-requests
+        type: latency
+        latency:
+          threshold_ms: 1000
+      - name: sample-the-rest
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 10
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    enable_open_metrics: true   # exemplars: metric point -> trace_id, for Ch 3 dashboards
+
+  debug:
+    verbosity: basic
+
+service:
+  telemetry:
+    logs:
+      level: info
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, resource, attributes/redact, tail_sampling, batch]
+      exporters: [otlp/tempo, debug]
+    metrics:
+      receivers: [otlp]
+      processors: [resourcedetection, resource, batch]
+      exporters: [prometheus]
