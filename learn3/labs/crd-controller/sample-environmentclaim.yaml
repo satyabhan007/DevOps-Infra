@@ -1,0 +1,18 @@
+# A developer requesting a 3-day medium-sized preview environment.
+# Apply this after the CRD is installed:
+#   kubectl apply -f crd.yaml
+#   kubectl apply -f sample-environmentclaim.yaml
+#   kubectl get environmentclaims -A   # shortname: kubectl get ec -A
+apiVersion: platform.example.com/v1alpha1
+kind: EnvironmentClaim
+metadata:
+  name: pr-4821-preview
+  namespace: platform-claims
+  labels:
+    platform.example.com/team: checkout
+spec:
+  owner: priya@example.com
+  template: medium
+  ttlHours: 72
+  namespaceSuffix: pr-4821
+  networkIsolation: true

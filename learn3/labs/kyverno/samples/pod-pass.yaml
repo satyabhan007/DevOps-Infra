@@ -1,0 +1,20 @@
+# Passes all three ClusterPolicies: has resource requests + limits, an
+# immutable image tag, and both required labels.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: checkout-worker
+  labels:
+    app.kubernetes.io/name: checkout-worker
+    team: payments
+spec:
+  containers:
+    - name: worker
+      image: registry.example.com/checkout-worker:2.3.1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi

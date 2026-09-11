@@ -1,0 +1,29 @@
+# Argo CD Application — Git is the source of truth; the controller reconciles
+# cluster state to match overlays/prod on every sync interval, and self-heals
+# any manual kubectl drift (see Chapter 9, "GitOps with Argo CD").
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-api-prod
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/your-org/platform-deploy.git
+    targetRevision: main
+    path: learn3/labs/gitops/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: platform-api-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
