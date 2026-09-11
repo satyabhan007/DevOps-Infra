@@ -1,0 +1,102 @@
+{
+  "version": "0.2",
+  "currency": "USD",
+  "projects": [
+    {
+      "name": "learn2/labs/cost",
+      "metadata": {
+        "path": "learn2/labs/cost",
+        "type": "terraform_dir"
+      },
+      "breakdown": {
+        "resources": [
+          {
+            "name": "aws_instance.app[0]",
+            "resourceType": "aws_instance",
+            "monthlyCost": "288.32",
+            "costComponents": [
+              {
+                "name": "Instance usage (Linux/UNIX, on-demand, m5.2xlarge)",
+                "unit": "hours",
+                "monthlyQuantity": "730",
+                "price": "0.384",
+                "monthlyCost": "280.32"
+              },
+              {
+                "name": "Storage (general purpose SSD, gp3)",
+                "unit": "GB",
+                "monthlyQuantity": "100",
+                "price": "0.08",
+                "monthlyCost": "8.00"
+              }
+            ]
+          },
+          {
+            "name": "aws_instance.app[1]",
+            "resourceType": "aws_instance",
+            "monthlyCost": "288.32",
+            "costComponents": [
+              { "name": "Instance usage (Linux/UNIX, on-demand, m5.2xlarge)", "monthlyCost": "280.32" },
+              { "name": "Storage (general purpose SSD, gp3)", "monthlyCost": "8.00" }
+            ]
+          },
+          {
+            "name": "aws_instance.app[2]",
+            "resourceType": "aws_instance",
+            "monthlyCost": "288.32",
+            "costComponents": [
+              { "name": "Instance usage (Linux/UNIX, on-demand, m5.2xlarge)", "monthlyCost": "280.32" },
+              { "name": "Storage (general purpose SSD, gp3)", "monthlyCost": "8.00" }
+            ]
+          },
+          {
+            "name": "aws_db_instance.primary",
+            "resourceType": "aws_db_instance",
+            "monthlyCost": "612.68",
+            "costComponents": [
+              {
+                "name": "Database instance (on-demand, Multi-AZ, db.r6g.xlarge)",
+                "unit": "hours",
+                "monthlyQuantity": "730",
+                "price": "0.796",
+                "monthlyCost": "581.08"
+              },
+              {
+                "name": "Storage (gp3)",
+                "unit": "GB",
+                "monthlyQuantity": "200",
+                "price": "0.158",
+                "monthlyCost": "31.60"
+              }
+            ]
+          },
+          {
+            "name": "aws_ebs_volume.app_data",
+            "resourceType": "aws_ebs_volume",
+            "monthlyCost": "40.00",
+            "costComponents": [
+              {
+                "name": "Storage (general purpose SSD, gp3)",
+                "unit": "GB",
+                "monthlyQuantity": "500",
+                "price": "0.08",
+                "monthlyCost": "40.00"
+              }
+            ]
+          }
+        ],
+        "totalMonthlyCost": "1517.64"
+      }
+    }
+  ],
+  "summary": {
+    "totalDetectedResources": 5,
+    "totalSupportedResources": 5,
+    "totalUnsupportedResources": 0,
+    "totalUsageBasedResources": 0,
+    "totalNoPriceResources": 0
+  },
+  "totalMonthlyCost": "1517.64",
+  "pastTotalMonthlyCost": "0",
+  "diffTotalMonthlyCost": "1517.64"
+}
