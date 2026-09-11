@@ -13,7 +13,11 @@ Sibling project to [AI-ML](https://github.com/satyabhan007/AI-ML).
 | Path | Contents |
 |------|----------|
 | `index.html`, `assets/` | The landing page (dark theme, zero-build static site). |
-| `learn/` | An 8-chapter × 5-level interactive course (analogy → expert), progress saved in `localStorage`. |
+| `learn/` | Part 1 — an 8-chapter × 5-level interactive course (analogy → expert), progress saved in `localStorage`. |
+| `learn2/` | Part 2 — Terraform & IaC at Scale: 16 chapters × 5 levels (modules, remote state, drift, policy as code, multi-cloud, testing, CI/CD for infra, cost governance). |
+| `learn3/` | Part 3 — Kubernetes Platform Engineering: 16 chapters × 5 levels (CRDs/operators, Helm, GitOps, service mesh, multi-tenancy, admission control, autoscaling, security). |
+| `learn4/` | Part 4 — Cloud Networking, Identity & Security: 16 chapters × 5 levels (VPC design, IAM, zero-trust, Vault, mTLS, compliance, secure landing zones). |
+| `learn5/` | Part 5 — Observability & Incident Engineering: 16 chapters × 5 levels (Prometheus, Grafana, OpenTelemetry, SLOs, alerting, chaos engineering, postmortems). |
 | `iac/` | IaC fundamentals — `BEGINNER_GUIDE.md` (analogy, drift, state) + `DEEP_DIVE.md` (reconciliation, GitOps, policy). |
 | `terraform/` | `BEGINNER_GUIDE.md`, `SCENARIOS.md` (stuck locks, drift, import, secret leaks), and 4 runnable `examples/`. |
 | `docker/` | `BEGINNER_GUIDE.md`, `SCENARIOS.md`, and `examples/` — multi-stage, hardened, Compose. |

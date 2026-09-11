@@ -3,9 +3,10 @@ name: Deploy DevOps-Infra to GitHub Pages
 # Deploys the static site plus the raw lab sources so in-page links to
 # `<topic>/examples/**` and `<topic>/*.md` resolve (GitHub Pages serves
 # them as plain text). Package: index.html, 404.html, top-level *.md,
-# assets/, learn/, lab/, and every topic dir (iac, terraform, docker,
-# kubernetes, sre) — their .html/.css/.js/.svg AND .md/.tf/.hcl/.yaml/
-# .yml/.sh/.py/Dockerfile. Excludes: *.ps1, __pycache__, .terraform, .git.
+# assets/, learn/ (Part 1) + learn2-5/ (Parts 2-5, shared /assets/course.js),
+# lab/, and every topic dir (iac, terraform, docker, kubernetes, sre) —
+# their .html/.css/.js/.svg AND .md/.tf/.hcl/.yaml/.yml/.sh/.py/Dockerfile.
+# Excludes: *.ps1, __pycache__, .terraform, .git.
 
 on:
   push:
@@ -45,7 +46,7 @@ jobs:
           cp 404.html   _site_pkg/ 2>/dev/null || true
           cp ./*.md     _site_pkg/ 2>/dev/null || true
           cp LICENSE    _site_pkg/ 2>/dev/null || true
-          for d in assets learn lab iac terraform docker kubernetes sre; do
+          for d in assets learn learn2 learn3 learn4 learn5 lab iac terraform docker kubernetes sre; do
             [ -d "$d" ] && mkdir -p "_site_pkg/$d" && \
               find "$d" \
                 \( -name '*.html' -o -name '*.css' -o -name '*.js' -o -name '*.svg' \

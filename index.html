@@ -38,7 +38,11 @@
             </div>
             <nav class="nav-links">
                 <a href="#curriculum">Curriculum</a>
-                <a href="learn/">Course</a>
+                <a href="learn/">Course · P1</a>
+                <a href="learn2/">P2</a>
+                <a href="learn3/">P3</a>
+                <a href="learn4/">P4</a>
+                <a href="learn5/">P5</a>
                 <a href="#labs">Labs</a>
                 <a href="#scenarios">Prod &amp; SRE</a>
                 <a href="#docs">Docs</a>
@@ -80,8 +84,8 @@
     <section class="section-sm reveal">
         <div class="container">
             <div class="stats-bar">
-                <div class="stat-item"><div class="stat-value">8</div><div class="stat-label">Course Chapters</div></div>
-                <div class="stat-item"><div class="stat-value">5</div><div class="stat-label">Levels Each</div></div>
+                <div class="stat-item"><div class="stat-value">5</div><div class="stat-label">Course Parts</div></div>
+                <div class="stat-item"><div class="stat-value">88</div><div class="stat-label">Chapters × 5 Levels</div></div>
                 <div class="stat-item"><div class="stat-value">14</div><div class="stat-label">Deep-Dive Guides</div></div>
                 <div class="stat-item"><div class="stat-value">20+</div><div class="stat-label">Runnable Lab Files</div></div>
             </div>
@@ -98,13 +102,35 @@
                 tools you already use, runnable code, and a checkpoint quiz.
             </p>
             <div class="card" style="margin-bottom:32px;border-left:3px solid #3b82f6;">
-                <div class="card-title">&#128218; Prefer a guided path?</div>
+                <div class="card-title">&#128218; Prefer a guided path? Five parts, 88 chapters.</div>
                 <p style="margin:12px 0;color:var(--text-muted);font-size:0.92rem;">
-                    The same topics as a structured course — <strong>8 chapters &times;
-                    5 levels</strong>, from plain-English analogy to expert view, with
-                    lab links and checkpoint quizzes.
+                    <strong>Part 1 — Fundamentals</strong>: the topics below as <strong>8
+                    chapters &times; 5 levels</strong>, analogy to expert view, with lab links
+                    and checkpoint quizzes.<br>
+                    <strong>Part 2 — Terraform &amp; IaC at Scale</strong>: <strong>16
+                    chapters &times; 5 levels</strong> on modules, remote state &amp; locking,
+                    drift management, policy as code, multi-cloud, testing IaC, secrets,
+                    CI/CD for infra, and cost governance.<br>
+                    <strong>Part 3 — Kubernetes Platform Engineering</strong>: <strong>16
+                    chapters &times; 5 levels</strong> on CRDs &amp; operators, Helm at scale,
+                    GitOps, service mesh, multi-tenancy, admission control, autoscaling,
+                    storage, and Kubernetes security.<br>
+                    <strong>Part 4 — Cloud Networking, Identity &amp; Security</strong>:
+                    <strong>16 chapters &times; 5 levels</strong> on VPC design, load
+                    balancing, DNS, IAM, zero-trust, Vault, mTLS, compliance, and secure
+                    landing zones.<br>
+                    <strong>Part 5 — Observability &amp; Incident Engineering</strong>:
+                    <strong>16 chapters &times; 5 levels</strong> on Prometheus, Grafana,
+                    OpenTelemetry, SLOs, alerting, chaos engineering, on-call, and
+                    postmortems — each ending in an interview drill.
                 </p>
-                <a href="learn/" class="btn btn-sm btn-primary">Open the Infrastructure Course &rarr;</a>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <a href="learn/" class="btn btn-sm btn-primary">Part 1 — Fundamentals &rarr;</a>
+                    <a href="learn2/" class="btn btn-sm btn-outline">Part 2 — Terraform &amp; IaC &rarr;</a>
+                    <a href="learn3/" class="btn btn-sm btn-outline">Part 3 — Kubernetes &rarr;</a>
+                    <a href="learn4/" class="btn btn-sm btn-outline">Part 4 — Networking &amp; Security &rarr;</a>
+                    <a href="learn5/" class="btn btn-sm btn-outline">Part 5 — Observability &rarr;</a>
+                </div>
             </div>
             <div class="grid-3">
                 <div class="card phase-card" data-phase="Ch 1">
@@ -478,6 +504,108 @@ kubectl apply --dry-run=client -f kubernetes/manifests/</code></pre>
         </div>
     </section>
 
+    <!-- Keep Learning -->
+    <section class="section section-alt reveal" id="learn-more">
+        <div class="container">
+            <h2 class="section-title">Keep Learning</h2>
+            <p class="section-subtitle">
+                Five course parts in this repo — Part 1 from first principles,
+                Parts 2–5 operating the standard tools at production depth.
+            </p>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#9881;&#65039;</div>
+                        <div>
+                            <div class="card-title">Course · Part 1 — Fundamentals</div>
+                            <div class="card-meta">This repo · 8 chapters &times; 5 levels</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        IaC &rarr; Terraform &rarr; Docker &rarr; Kubernetes architecture &amp;
+                        workloads &rarr; config/storage/security &rarr; scaling &amp;
+                        self-healing &rarr; SRE production ops.
+                    </p>
+                    <a href="learn/" class="btn btn-sm btn-primary">Open Part 1</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#127959;&#65039;</div>
+                        <div>
+                            <div class="card-title">Course · Part 2 — Terraform &amp; IaC at Scale</div>
+                            <div class="card-meta">This repo · 16 chapters &times; 5 levels</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        Modules, remote state &amp; locking, drift, policy as code
+                        (OPA/Sentinel), multi-cloud, testing IaC, secrets, CI/CD for
+                        infra, state surgery, cost governance.
+                    </p>
+                    <a href="learn2/" class="btn btn-sm btn-primary">Open Part 2</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#9761;&#65039;</div>
+                        <div>
+                            <div class="card-title">Course · Part 3 — Kubernetes Platform Engineering</div>
+                            <div class="card-meta">This repo · 16 chapters &times; 5 levels</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        CRDs &amp; operators, Helm at scale, GitOps (Argo CD/Flux), service
+                        mesh, multi-tenancy, admission control, autoscaling, storage,
+                        Kubernetes security, cost optimization.
+                    </p>
+                    <a href="learn3/" class="btn btn-sm btn-primary">Open Part 3</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#128274;</div>
+                        <div>
+                            <div class="card-title">Course · Part 4 — Networking, Identity &amp; Security</div>
+                            <div class="card-meta">This repo · 16 chapters &times; 5 levels</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        VPC design, load balancing, DNS, peering &amp; transit gateways,
+                        IAM, zero-trust, Vault/KMS, mTLS, network security, CIS
+                        compliance, secure landing zones.
+                    </p>
+                    <a href="learn4/" class="btn btn-sm btn-primary">Open Part 4</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#128225;</div>
+                        <div>
+                            <div class="card-title">Course · Part 5 — Observability &amp; Incident Engineering</div>
+                            <div class="card-meta">This repo · 16 chapters &times; 5 levels</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        Prometheus, Grafana, OpenTelemetry tracing, log aggregation,
+                        SLOs &amp; error budgets, burn-rate alerting, on-call, chaos
+                        engineering, postmortems.
+                    </p>
+                    <a href="learn5/" class="btn btn-sm btn-primary">Open Part 5</a>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">&#129504;</div>
+                        <div>
+                            <div class="card-title">AI-ML — sibling curriculum</div>
+                            <div class="card-meta">External · satyabhan007.github.io/AI-ML</div>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.9rem;">
+                        AI/ML engineering from scratch through production system design,
+                        deployment, observability, and enterprise-scale AI. 202 chapters.
+                    </p>
+                    <a href="https://satyabhan007.github.io/AI-ML/" class="btn btn-sm btn-outline" target="_blank" rel="noopener">Open AI-ML &#8599;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer class="site-footer reveal">
         <div class="container">
             <div class="footer-content">
@@ -487,8 +615,10 @@ kubectl apply --dry-run=client -f kubernetes/manifests/</code></pre>
                 </div>
                 <p class="footer-text">
                     A self-contained infrastructure curriculum — Infrastructure as Code,
-                    Terraform, Docker and Kubernetes from first principles, with runnable
-                    labs, production scenarios and SRE playbooks. Sibling project to
+                    Terraform, Docker and Kubernetes from first principles (Part 1), then
+                    the standard tools operated at production depth (Parts 2–5): IaC at
+                    scale, platform engineering, networking &amp; security, observability.
+                    Sibling project to
                     <a href="https://satyabhan007.github.io/AI-ML/" style="color:var(--primary)">AI-ML</a>.
                 </p>
                 <div class="social-links">
