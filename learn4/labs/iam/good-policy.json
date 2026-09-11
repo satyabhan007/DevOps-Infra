@@ -1,0 +1,52 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListOwnPrefixOnly",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::acme-app-data",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": "orders/*"
+        }
+      }
+    },
+    {
+      "Sid": "ReadWriteOrdersPrefixOnly",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::acme-app-data/orders/*"
+    },
+    {
+      "Sid": "OrdersTableReadWrite",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query"
+      ],
+      "Resource": "arn:aws:dynamodb:us-east-1:111122223333:table/orders"
+    },
+    {
+      "Sid": "DenyOutsideExpectedRegion",
+      "Effect": "Deny",
+      "Action": [
+        "s3:*",
+        "dynamodb:*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    }
+  ]
+}

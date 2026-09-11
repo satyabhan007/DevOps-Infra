@@ -1,0 +1,29 @@
+# ClusterIssuer for Let's Encrypt production certificates via the ACME
+# HTTP-01 challenge, routed through an nginx ingress controller.
+#
+# ClusterIssuer (vs. a namespaced Issuer) is used here because this issuer
+# should be usable by Certificate resources in any namespace in the
+# cluster, not just one team's namespace.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    # Let's Encrypt's production ACME endpoint. Point staging traffic at
+    # https://acme-staging-v02.api.letsencrypt.org/directory instead while
+    # testing — production has tight rate limits, staging does not.
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: platform-team@example.com
+    privateKeySecretRef:
+      # cert-manager stores this ClusterIssuer's ACME account key here so
+      # it doesn't need to re-register with Let's Encrypt on every restart.
+      name: letsencrypt-prod-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx
+        # Optional: only use this solver for challenges on these domains.
+        # Omit `selector` entirely to make it the default solver for every
+        # domain requested against this issuer.
+        selector: {}
