@@ -1,0 +1,26 @@
+# Requests a TLS certificate for app.example.com from the letsencrypt-prod
+# ClusterIssuer defined in cluster-issuer.yaml. cert-manager watches this
+# resource, drives the ACME HTTP-01 challenge, and keeps the resulting
+# secret renewed for as long as this Certificate exists.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: app-example-com-tls
+  namespace: default
+spec:
+  # The Secret cert-manager writes the issued cert + key into. Reference
+  # this name from an Ingress's spec.tls[].secretName to serve it.
+  secretName: app-example-com-tls
+  duration: 2160h # 90d — Let's Encrypt's max certificate lifetime
+  renewBefore: 360h # renew 15d before expiry
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  dnsNames:
+    - app.example.com
+    - www.app.example.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
