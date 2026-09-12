@@ -1,0 +1,19 @@
+# Violates require-labels: no `team` label, so cost-attribution and
+# on-call tooling can't tell who owns this Pod.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: checkout-worker-unowned
+  labels:
+    app.kubernetes.io/name: checkout-worker
+spec:
+  containers:
+    - name: worker
+      image: registry.example.com/checkout-worker:2.3.1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi

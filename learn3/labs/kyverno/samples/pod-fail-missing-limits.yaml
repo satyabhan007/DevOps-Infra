@@ -1,0 +1,14 @@
+# Violates require-resource-limits: no `resources` block at all, so the
+# scheduler has nothing to bin-pack against and this container could
+# consume an entire node.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: checkout-worker-unbounded
+  labels:
+    app.kubernetes.io/name: checkout-worker
+    team: payments
+spec:
+  containers:
+    - name: worker
+      image: registry.example.com/checkout-worker:2.3.1

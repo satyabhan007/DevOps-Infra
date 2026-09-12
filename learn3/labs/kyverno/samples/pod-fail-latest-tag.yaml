@@ -1,0 +1,20 @@
+# Violates disallow-latest-tag: floating ":latest" tag means a redeploy of
+# this exact manifest can silently pull a different image tomorrow.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: checkout-worker-floating
+  labels:
+    app.kubernetes.io/name: checkout-worker
+    team: payments
+spec:
+  containers:
+    - name: worker
+      image: registry.example.com/checkout-worker:latest
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi

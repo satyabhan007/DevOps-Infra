@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: platform-api-prod
+resources:
+  - ../../base
+replicas:
+  - name: platform-api
+    count: 5
+images:
+  - name: registry.example.com/platform-api
+    newTag: 1.4.2
+patches:
+  - target: { kind: Deployment, name: platform-api }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 1Gi

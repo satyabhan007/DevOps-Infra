@@ -1,0 +1,34 @@
+# Every Pod must carry ownership/cost-attribution labels so platform
+# tooling (chargeback dashboards, on-call paging, orphan-resource sweeps)
+# can always answer "whose is this and what does it belong to".
+# See Chapter 11, "Policy as Code with Kyverno".
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+  annotations:
+    policies.kyverno.io/title: Require Ownership Labels
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Requires the app.kubernetes.io/name and team labels on every Pod, so
+      cost-attribution and on-call tooling always has an owner to point at.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-for-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          The labels `app.kubernetes.io/name` and `team` are required on
+          every Pod.
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/name: "?*"
+              team: "?*"
