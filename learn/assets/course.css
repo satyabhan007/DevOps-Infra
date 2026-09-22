@@ -96,3 +96,61 @@ a { color: inherit; text-decoration: none; }
 .chip { display: inline-block; width: 24px; height: 22px; line-height: 22px; text-align: center; font-size: .66rem; font-weight: 700; color: var(--muted); background: #1e2638; border: 1px solid var(--border); border-radius: 6px; }
 .chip.done { background: rgba(16,185,129,.18); color: var(--green); border-color: rgba(16,185,129,.4); }
 .chcard .open { display: block; font-size: .82rem; color: var(--cyan); margin-top: 8px; }
+
+
+/* ── Aurora Pulse Canvas ───────────────────────────────────────── */
+#auroraCanvas {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  transition: opacity 600ms ease;
+}
+body > *:not(#auroraCanvas) { position: relative; z-index: 1; }
+
+/* ── Architecture Diagram Blocks ─────────────────────────────── */
+.diagram-block {
+  margin: 14px 0 18px;
+  border: 1px solid rgba(0,242,254,.18);
+  border-radius: 10px;
+  background: rgba(0,242,254,.04);
+  overflow-x: auto;
+}
+.arch-diagram {
+  font-family: 'JetBrains Mono','Fira Code','Courier New',monospace;
+  font-size: .70rem; line-height: 1.55;
+  color: hsl(186,78%,72%);
+  padding: 14px 18px; margin: 0;
+  white-space: pre; background: transparent; border: none;
+  text-shadow: 0 0 8px hsla(186,100%,60%,.22);
+}
+@media(max-width:600px){.arch-diagram{font-size:.60rem;padding:10px;}}
+
+/* ── Jev Relevancy Score Section ─────────────────────────────── */
+.jev-section { margin: 36px 0 0; padding: 28px 0 0; border-top: 1px solid rgba(255,255,255,.08); }
+.jev-section h2 { font-size: 1.12rem; font-weight: 800; text-align: center; background: linear-gradient(90deg,#06b6d4,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+.jev-section .jev-subtitle { text-align: center; color: #6b7280; font-size: .84rem; margin-bottom: 18px; }
+.jev-composite { display: flex; align-items: center; justify-content: center; gap: 14px; background: rgba(6,182,212,.07); border: 1px solid rgba(6,182,212,.22); border-radius: 12px; padding: 14px 20px; margin-bottom: 18px; }
+.jev-composite .score-big { font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg,#06b6d4,#10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+.jev-composite .score-label { font-size: .82rem; color: #9ca3af; max-width: 280px; }
+.jev-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 14px; }
+.jev-card { background: rgba(21,28,46,.9); border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 14px 16px; }
+.jev-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.jev-card-title { display: flex; align-items: center; gap: 8px; }
+.jev-card-emoji { font-size: 1.3rem; }
+.jev-card-num { font-size: .68rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; }
+.jev-card h4 { font-size: .88rem; font-weight: 700; margin: 0; color: #f9fafb; }
+.jev-ring-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+.jev-ring-wrap svg { transform: rotate(-90deg); }
+.jev-ring-bg { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 4; }
+.jev-ring-fill { fill: none; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 132; }
+.jev-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.jev-ring-score { font-size: .95rem; font-weight: 900; line-height: 1; }
+.jev-ring-max { font-size: .58rem; color: #6b7280; }
+.jev-bars { margin-top: 8px; }
+.jev-bar-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+.jev-bar-lbl { font-size: .64rem; color: #6b7280; width: 52px; flex-shrink: 0; }
+.jev-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,.06); border-radius: 99px; overflow: hidden; }
+.jev-bar-fill { height: 100%; border-radius: 99px; }
+.jev-bar-pct { font-size: .64rem; color: #6b7280; width: 28px; text-align: right; }
+.jev-verdict { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: .74rem; color: #9ca3af; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.06); }
+.jev-verdict.yes { color: #10b981; }
