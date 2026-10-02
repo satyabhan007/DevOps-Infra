@@ -332,3 +332,112 @@ pre code { background: none; color: #d1d5db; padding: 0; font-size: 0.85rem; }
     background: var(--primary);
     color: #0b0f19;
 }
+/* ---- Terminal Simulator & Aurora Canvas Styles ---- */
+
+#auroraCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.terminal-window {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+.terminal-header {
+    background-color: #333;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid #111;
+}
+
+.terminal-buttons {
+    position: absolute;
+    left: 12px;
+    display: flex;
+    gap: 6px;
+}
+
+.terminal-buttons span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-close { background-color: #ff5f56; cursor: pointer; }
+.terminal-minimize { background-color: #ffbd2e; cursor: pointer; }
+.terminal-expand { background-color: #27c93f; cursor: pointer; }
+
+.terminal-title {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.terminal-body {
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.term-line {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.term-line.prompt-user {
+    color: #4ade80;
+    font-weight: bold;
+}
+
+.term-line .prompt-dir {
+    color: #60a5fa;
+    font-weight: bold;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+.cmd-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.run-btn {
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.run-btn:hover {
+    background: var(--primary);
+    color: var(--bg);
+}

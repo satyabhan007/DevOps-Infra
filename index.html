@@ -27,6 +27,7 @@
     <script>if('IntersectionObserver' in window){document.documentElement.className='js';}</script>
 </head>
 <body>
+    <canvas id="auroraCanvas"></canvas>
     <header class="site-header">
         <div class="container nav-container">
             <div class="brand">
@@ -432,7 +433,10 @@
                             <div class="cmd-row">
                                 <pre id="cmd-clone"><code>git clone https://github.com/satyabhan007/DevOps-Infra.git
 cd DevOps-Infra</code></pre>
-                                <button class="copy-btn" data-target="#cmd-clone" type="button">Copy</button>
+                                <div class="cmd-actions">
+                                    <button class="copy-btn" data-target="#cmd-clone" type="button">Copy</button>
+                                    <button class="run-btn" data-target="#cmd-clone" type="button">Run</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -445,7 +449,10 @@ cd DevOps-Infra</code></pre>
                             Zero dependencies — checks every lab file offline.
                             <div class="cmd-row">
                                 <pre id="cmd-test"><code>python lab/validate.py</code></pre>
-                                <button class="copy-btn" data-target="#cmd-test" type="button">Copy</button>
+                                <div class="cmd-actions">
+                                    <button class="copy-btn" data-target="#cmd-test" type="button">Copy</button>
+                                    <button class="run-btn" data-target="#cmd-test" type="button">Run</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -461,11 +468,26 @@ cd DevOps-Infra</code></pre>
 docker build -t demo docker/examples/multistage
 # or
 kubectl apply --dry-run=client -f kubernetes/manifests/</code></pre>
-                                <button class="copy-btn" data-target="#cmd-lab" type="button">Copy</button>
+                                <div class="cmd-actions">
+                                    <button class="copy-btn" data-target="#cmd-lab" type="button">Copy</button>
+                                    <button class="run-btn" data-target="#cmd-lab" type="button">Run</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div id="terminal-sim" class="terminal-window" style="display: none; margin-top: 20px;">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-close"></span>
+                        <span class="terminal-minimize"></span>
+                        <span class="terminal-expand"></span>
+                    </div>
+                    <div class="terminal-title">bash</div>
+                </div>
+                <div class="terminal-body"></div>
             </div>
         </div>
     </section>
